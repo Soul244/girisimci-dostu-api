@@ -8,7 +8,7 @@ require('dotenv').config();
 const middlewares = require('./middlewares');
 const api = require('./api');
 const connectDatabase = require('./database/connection');
-const insertMockData = require('./mock');
+// const insertMockData = require('./mock');
 
 connectDatabase(`mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@cluster0.stt1i.mongodb.net/${process.env.MONGO_DB_NAME}`);
 
