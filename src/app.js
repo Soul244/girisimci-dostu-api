@@ -2,7 +2,6 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const serverless = require('serverless-http');
 
 require('dotenv').config();
 
@@ -11,7 +10,9 @@ const api = require('./api');
 const connectDatabase = require('./database/connection');
 const insertMockData = require('./mock');
 
-connectDatabase(`mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@cluster0.stt1i.mongodb.net/${process.env.MONGO_DB_NAME}`);
+connectDatabase(
+  `mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@cluster0.stt1i.mongodb.net/${process.env.MONGO_DB_NAME}`,
+);
 
 // insertMockData();
 
@@ -34,4 +35,4 @@ app.use('/api/v1', api);
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
 
-module.exports = serverless(app);
+module.exports = app;
