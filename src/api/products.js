@@ -8,22 +8,28 @@ router.get('/', async (req, res, next) => {
     const {
       page = 1,
       limit = 20,
-      datesort: dateSort = 'desc', // asc, desc
-      sellcountsort: sellCountSort, // asc, desc
-      minprice: minPrice,
-      maxprice: maxPrice,
-      review, // array
-      brand, // array
+      minPrice,
+      maxPrice,
+      review, // number
+      brands, // array
+      // header filters
+      date, // asc, desc
+      sales, // asc, desc
+      price, // asc, desc
     } = req.query;
 
     let sort = {};
-    if (sellCountSort) {
+    if (sales) {
       sort = {};
-      sort.sellCount = sellCountSort === 'asc' ? 1 : -1;
+      sort.sales = sales === 'asc' ? 1 : -1;
     }
-    if (dateSort) {
+    if (price) {
       sort = {};
-      sort.created = dateSort === 'asc' ? 1 : -1;
+      sort.price = price === 'asc' ? 1 : -1;
+    }
+    if (date) {
+      sort = {};
+      sort.created = date === 'asc' ? 1 : -1;
     }
 
     const where = {};
@@ -44,10 +50,11 @@ router.get('/', async (req, res, next) => {
     }
 
     if (review) {
-      where.review = { $in: review };
+      where.reviewAvarage = { $gte: review };
     }
-    if (brand) {
-      where.brand = { $in: brand };
+
+    if (brands) {
+      where.brandName = { $in: brands };
     }
 
     const products = await Product.find(where)
@@ -55,10 +62,20 @@ router.get('/', async (req, res, next) => {
       .sort(sort)
       .skip((page - 1) * limit)
       .select({
-        name: 1, image: 1, price: 1, review: 1,
+        name: 1, image: 1, price: 1, sales: 1, reviewAvarage: 1, reviewCount: 1, brandName: 1,
       });
 
-    res.json(products);
+    const count = await Product.countDocuments(where);
+    const totalPages = Math.ceil(count / limit);
+
+    res.json({
+      products,
+      productsCount: count,
+      totalPages,
+      currentPage: parseInt(page, 10),
+      hasMore: totalPages >= parseInt(page, 10),
+      count,
+    });
   } catch (error) {
     next(error);
   }

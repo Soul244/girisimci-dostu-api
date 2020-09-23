@@ -13,24 +13,27 @@ const product = new mongoose.Schema({
     type: String,
     required: true,
   },
-  brand: {
+  brandName: {
     type: String,
     required: true,
   },
+  brand: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
   price: {
     type: Number,
     required: true,
   },
-  review: {
+  reviewCount: {
     type: Number,
-    required: true,
     min: 0,
-    max: 5,
     default: 0,
   },
-  sellCount: {
+  reviewAvarage: {
     type: Number,
-    required: true,
+    min: 0,
+    default: 0,
+  },
+  sales: {
+    type: Number,
     min: 0,
     default: 0,
   },
